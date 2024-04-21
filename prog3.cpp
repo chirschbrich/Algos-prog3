@@ -84,7 +84,10 @@ pair<bool, Stuff3> DecisionRecur2(vector<Stuff3>& vec, int start, Stuff3 stuff, 
    //need base cases for odd and even vector sizes
    if (start >= vec.size()) {
       if (count == 0) {
-         return make_pair(false, Stuff3()); //no solution
+         if (vec.size() % 2 != 0) //if it is odd, find edge case where no pairs occur but last num is deciding factor
+            stuff = vec[vec.size() - 1];
+         else
+            return make_pair(false, Stuff3()); //no solution
       }
 
       int numTimes = 0;
