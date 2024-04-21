@@ -12,9 +12,11 @@ pair<bool, Stuff3> DecisionRecur1(vector<Stuff3>& vec)
       if nothing is true then dont
    keep going up checking to see if the number is in the vector more than half the time
    */
+  // check if empty first
   if(vec.empty()) {
    return make_pair(false, Stuff3());
   }
+
    // Base case - two elements, compare them and return
    if (vec.size() == 2) {
       if (vec[0] == vec[1]) {
@@ -23,6 +25,7 @@ pair<bool, Stuff3> DecisionRecur1(vector<Stuff3>& vec)
          return make_pair(false, Stuff3());
       }
    }
+
    // Base case - one element, return true with that element
    if (vec.size() == 1) {
       return make_pair(true, vec[0]);
@@ -39,6 +42,7 @@ pair<bool, Stuff3> DecisionRecur1(vector<Stuff3>& vec)
          right.push_back(vec[i]);
       }
    }
+
    pair<bool, Stuff3> leftResult = DecisionRecur1(left);
    pair<bool, Stuff3> rightResult  = DecisionRecur1(right); 
 
@@ -49,6 +53,7 @@ pair<bool, Stuff3> DecisionRecur1(vector<Stuff3>& vec)
          if (leftResult.second == vec[i])
             count++;
       }
+
       if (count > vec.size()/2) {
          return leftResult;
       }
@@ -59,11 +64,12 @@ pair<bool, Stuff3> DecisionRecur1(vector<Stuff3>& vec)
          if (rightResult.second == vec[i])
             count++;
       }
+
       if (count > vec.size()/2) {
          return rightResult;
       }
    }
-   return make_pair(false, Stuff3()); //No Solution
+   return make_pair(false, Stuff3()); //no solution
 }
 
 pair<bool, Stuff3> Decision1(vector<Stuff3>& vec) {
@@ -73,18 +79,42 @@ pair<bool, Stuff3> Decision1(vector<Stuff3>& vec) {
 // you should modify the code for this one
 // you can also change the parameters. 
 // If you do that. make sure you change that for the call from Decision2()
-pair<bool, Stuff3> DecisionRecur2(vector<Stuff3>& vec, int end, Stuff3 obj, int count)
+pair<bool, Stuff3> DecisionRecur2(vector<Stuff3>& vec, int start, Stuff3 stuff, int count)
 {
    //need base cases for odd and even vector sizes
+   if (start >= vec.size()) {
+      if (count == 0) {
+         return make_pair(false, Stuff3()); //no solution
+      }
 
+      int numTimes = 0;
+      for (size_t i = 0; i < vec.size(); i++){
+         if (stuff == vec[i])
+            numTimes++;
+      }
 
-   Stuff3 s; //only creates a vector for compilation, will be deleted later
-   pair<bool, Stuff3> p = make_pair(true, s); //pair that will be returned, replace perameters with answer
-   return p;
+      if (numTimes > vec.size()/2) {
+         return make_pair(true, stuff);
+      }
+
+      return make_pair(false, Stuff3());
+   }
+
+   if (vec[start - 1] == vec[start] && vec[start] == stuff) { //matching pair found == previous pair, increment count
+      return DecisionRecur2(vec, start + 2, stuff, count + 1);
+   }
+   else if (vec[start - 1] == vec[start] && !(vec[start] == stuff)) { // matching pair found != previous pair (could be first matching pair found)
+      if (count == 0) { //first unique pair found
+         return DecisionRecur2(vec, start + 2, vec[start], count + 1); //first matching pair found
+      }
+      return DecisionRecur2(vec, start + 2, stuff, count - 1); //found matching pair != previous pair
+   }
+
+   return DecisionRecur2(vec, start + 2, stuff, count); //no matching pair found, move on to next call
 }
 
 pair<bool, Stuff3> Decision2(vector<Stuff3>& vec)
 {
    // you can change this line if you decide to change the parameters for DecisionRecur2
-   return DecisionRecur2(vec, vec.size() - 1, Stuff3(false, 0, 0, 0), 0);
+   return DecisionRecur2(vec, 1, Stuff3(false, 0, 0, 0), 0);
 }
